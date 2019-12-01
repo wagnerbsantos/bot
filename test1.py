@@ -3,11 +3,23 @@ import pyautogui
 import PIL
 import pytesseract
 import time
-from PIL import ImageMath
-pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe'
+import glob, os
+import numpy as np
+import constants
 
-image = PIL.Image.open("part1.png")
-#inverted = ImageMath.eval('255-(a)',a=image)
-inverted = PIL.ImageOps.invert(image.convert('RGB'))
-inverted.save("inverted.png")
-print(pytesseract.image_to_string(inverted.crop((0,0,170, 20))))
+pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe'
+pasta = "C:\\Users\\wag09\\AppData\\Local\\Tibia\\packages\\Tibia\\screenshots"
+
+os.chdir(pasta)
+
+pyautogui.press("p")
+screenshot = None
+time.sleep(2)
+c = 0
+while (screenshot is None):
+    for arq in glob.glob("2*.png"):
+        screenshot = PIL.Image.open(arq)
+    time.sleep(0.1)
+    screenshot.save("new.png")
+    c = c+1
+print(c)
