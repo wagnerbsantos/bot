@@ -24,7 +24,8 @@ def screenshot():
 
 def monsters(screenshot):
     monsters = screenshot.crop(constants.monsters_area)
-    monsters_colors = list(np.array(monsters.getcolors(700))[:,1])
+    #monsters.save("monsters.png")
+    monsters_colors = list(np.array(monsters.getcolors(800))[:,1])
     if constants.attack_color in monsters_colors:
         attacking = True
     else:
@@ -48,11 +49,21 @@ def health(screenshot):
 
     return health
 
+
 def map(screenshot):
     map_image = screenshot.crop(constants.map_area)
     lista = list(map_image.getdata())
-    x = np.reshape(np.array([x in constants.map_walkable for x in lista]), (-1, 105))
-    return x
+    waypoints = []
+    down = []
+    up = []
+    for idx, val in enumerate(lista):
+        if (val in constants.map_walkable):
+            waypoints.append((idx//105, idx%105))
+        if (val in constants.map_down):
+            down.append((idx//105, idx%105))
+        if (val in constants.map_up):
+            up.append((idx//105, idx%105))
+    return waypoints, down, up
 
 def food(screenshot):
     food_image = screenshot.crop(constants.food_area)

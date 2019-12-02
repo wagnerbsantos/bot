@@ -15,8 +15,10 @@ walking = False
 offset = 100
 x_center = 960
 y_center = 540-offset
+d = True
 w = 0
 c = 0
+move_speed = 20
 os.chdir(constants.screenshot_folder)
 for arq in glob.glob("*.png"):
     os.remove(arq)
@@ -36,13 +38,16 @@ def loot_around():
     pyautogui.click(button="right", x = 960, y = 500-offset)
     pyautogui.click(button="right", x = 920, y = 500-offset)
     pyautogui.click(button="right", x = 1050, y = 500-offset)
+    pyautogui.click(x=1000, y = 10)
 
     pyautogui.keyUp("shift")
     
 
 
 while True:
-    pyautogui.press("p")
+    if len([name for name in os.listdir('.') if os.path.isfile(name)]) < 1:
+        pyautogui.press("p")
+    time.sleep(0.1)
 
     screenshot, arq = processing.screenshot()
     
@@ -51,7 +56,8 @@ while True:
         health = processing.health(screenshot)
         mana = processing.mana(screenshot)
         food, battle = processing.food(screenshot)
-        mapa = processing.map(screenshot)
+        way, down, up = processing.map(screenshot)
+
 
 
         if monster_present:
@@ -62,17 +68,37 @@ while True:
                 loot_around()
             
         
-        if c % 6 == 0:
+        if c % move_speed == 0:
             if not attacking:
                 loot_around()
-                found = False
-                while not found:
-                    x_target = random.randrange(0, mapa.shape[0])
-                    y_target = random.randrange(0, mapa.shape[1])
-                    if mapa[x_target, y_target]:
-                        found = True
-                        pyautogui.click(x = 1710 + int(y_target * 1.26), y = 35 + int(x_target* 1.24))
-                        pyautogui.click(x = 1895, y = 220)
+                if w < 6:
+                    x = random.randrange(0, len(way))
+                    pos = way[x]
+                    w = w + 1
+                    pyautogui.click(x = 1895, y = 220)
+                else:
+                    pos = (0,0)
+                    if d and len(down) > 0:
+                        x = random.randrange(0, len(down))
+                        pos = down[x]
+                        pyautogui.click(x = 1895, y = 195)
+                    elif d and len(down) == 0:
+                        d = False
+                        w = 0
+                        move_speed = 20
+                    elif not d and len(up) > 0:
+                        x = random.randrange(0, len(up))
+                        pos = up[x]
+                        pyautogui.press("u")
+                        pyautogui.click(button="left", x = 960, y = 540-offset)
+                        move_speed = 5
+                    elif not d and len(up) == 0:
+                        d = True
+                        w = 0
+                        move_speed = 20
+                        pyautogui.click(x = 1895, y = 195)
+                pyautogui.click(x = 1710 + int(pos[1] * 1.26), y = 35 + int(pos[0]* 1.24))
+
         print(health, mana)
 
         if mana == 2:
@@ -90,7 +116,10 @@ while True:
             pyautogui.press("f8")
         c = c+1
         screenshot.close()
-        os.remove(arq)
+        try:
+            os.remove(arq)
+        except:
+            print("bugou")
     else:
         pass
 
