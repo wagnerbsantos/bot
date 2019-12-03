@@ -38,7 +38,7 @@ def loot_around():
     pyautogui.click(button="right", x = 960, y = 500-offset)
     pyautogui.click(button="right", x = 920, y = 500-offset)
     pyautogui.click(button="right", x = 1050, y = 500-offset)
-    pyautogui.click(x=1000, y = 10)
+    pyautogui.click(x=1000, y = 200)
 
     pyautogui.keyUp("shift")
     
