@@ -17,8 +17,9 @@ x_center = 960
 y_center = 540-offset
 d = True
 w = 0
+last = -1
 c = 0
-move_speed = 20
+move_speed = 5
 os.chdir(constants.screenshot_folder)
 for arq in glob.glob("*.png"):
     os.remove(arq)
@@ -38,7 +39,7 @@ def loot_around():
     pyautogui.click(button="right", x = 960, y = 500-offset)
     pyautogui.click(button="right", x = 920, y = 500-offset)
     pyautogui.click(button="right", x = 1050, y = 500-offset)
-    pyautogui.click(x=1000, y = 200)
+    pyautogui.moveTo(x=1000, y = 200)
 
     pyautogui.keyUp("shift")
     
@@ -63,19 +64,23 @@ while True:
         if monster_present:
             if not attacking:
                 pyautogui.press("e")
-                pyautogui.click(x = 1895, y = 220)
-                attacking = True
+                #pyautogui.click(x = 1895, y = 220)
+                #attacking = True
                 loot_around()
             
         
         if c % move_speed == 0:
-            if not attacking:
+            if True:
                 loot_around()
+                rope = False
                 if w < 6:
                     x = random.randrange(0, len(way))
+                    while x == last:
+                        x = random.randrange(0, len(way))
+                    last = x
                     pos = way[x]
                     w = w + 1
-                    pyautogui.click(x = 1895, y = 220)
+                    #pyautogui.click(x = 1895, y = 220)
                 else:
                     pos = (0,0)
                     if d and len(down) > 0:
@@ -85,19 +90,23 @@ while True:
                     elif d and len(down) == 0:
                         d = False
                         w = 0
-                        move_speed = 20
+                        move_speed = 5
                     elif not d and len(up) > 0:
                         x = random.randrange(0, len(up))
                         pos = up[x]
-                        pyautogui.press("u")
-                        pyautogui.click(button="left", x = 960, y = 540-offset)
+                        rope = True
                         move_speed = 5
+                        time.sleep(1)
                     elif not d and len(up) == 0:
                         d = True
                         w = 0
-                        move_speed = 20
+                        move_speed = 5
                         pyautogui.click(x = 1895, y = 195)
+                time.sleep(2)
                 pyautogui.click(x = 1710 + int(pos[1] * 1.26), y = 35 + int(pos[0]* 1.24))
+                if rope:
+                    pyautogui.press("u")
+                    pyautogui.click(button="left", x = 960, y = 540-offset)
 
         print(health, mana)
 
@@ -121,7 +130,8 @@ while True:
         except:
             print("bugou")
     else:
-        pass
+        pyautogui.press("p")
+
 
 
 
